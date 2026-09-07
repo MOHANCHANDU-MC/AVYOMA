@@ -16,7 +16,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
-  Activity
+  Activity,
+  DollarSign,
+  Receipt,
+  CreditCard,
+  PieChart,
+  RefreshCw,
+  FolderTree,
+  FileSpreadsheet,
+  BookOpen
 } from 'lucide-react';
 import { getCurrentUser } from '../services/storageService';
 
@@ -27,7 +35,24 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
     {
       title: 'OVERVIEW',
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
+        { id: 'dashboard', label: 'Executive CRM', icon: LayoutDashboard },
+        { id: 'finance-dashboard', label: 'Finance Overview', icon: DollarSign }
+      ]
+    },
+    {
+      title: 'FINANCE & ACCOUNTING',
+      items: [
+        { id: 'finance-accounts', label: 'Chart of Accounts', icon: FolderTree },
+        { id: 'finance-journals', label: 'General Ledger Vouchers', icon: BookOpen },
+        { id: 'finance-invoices', label: 'Invoices & Receivables', icon: Receipt },
+        { id: 'finance-bills', label: 'Bills & Payables', icon: FileText },
+        { id: 'finance-expenses', label: 'Expenses & Approvals', icon: CreditCard },
+        { id: 'finance-income', label: 'Direct Income', icon: TrendingUp },
+        { id: 'finance-banking', label: 'Banking & Reconciliation', icon: RefreshCw },
+        { id: 'finance-budgets', label: 'Budgets & Cost Centers', icon: PieChart },
+        { id: 'finance-taxes', label: 'Taxes & Financial Years', icon: Shield },
+        { id: 'finance-reports', label: 'Financial Statements', icon: BarChart3 },
+        { id: 'finance-import', label: 'Data Import Center', icon: FileSpreadsheet }
       ]
     },
     {
@@ -52,7 +77,7 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
     {
       title: 'INSIGHTS',
       items: [
-        { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 }
+        { id: 'reports', label: 'Sales Analytics', icon: BarChart3 }
       ]
     },
     {
@@ -107,7 +132,7 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
                 AVYOMA
               </div>
               <div style={{ color: '#64748B', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>
-                PRECISION CRM
+                ENTERPRISE ERP
               </div>
             </div>
           </div>
@@ -174,7 +199,7 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: collapsed ? '10px 0' : '10px 12px',
+                    padding: collapsed ? '10px 0' : '9px 12px',
                     justifyContent: collapsed ? 'center' : 'flex-start',
                     borderRadius: 'var(--radius-md)',
                     border: 'none',
@@ -199,7 +224,7 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
                     }
                   }}
                 >
-                  <Icon size={18} style={{ color: isActive ? '#3B82F6' : undefined }} />
+                  <Icon size={17} style={{ color: isActive ? '#3B82F6' : undefined }} />
                   {!collapsed && <span>{item.label}</span>}
                 </button>
               );
@@ -237,7 +262,7 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
               {currentUser.name}
             </div>
             <div style={{ color: '#64748B', fontSize: '11px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-              {currentUser.role}
+              Finance Admin
             </div>
           </div>
         )}
