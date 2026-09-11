@@ -41,7 +41,29 @@ export const LeadsView = ({ leads, onRefresh }) => {
     { header: 'Industry', field: 'industry' },
     { header: 'Est. Value', field: 'estimatedValue', render: (val) => <span className="num-tabular" style={{ fontWeight: 600 }}>{formatCurrency(val)}</span> },
     { header: 'Lead Score', field: 'leadScore', render: (val) => <ScoreBadge score={val} /> },
-    { header: 'Status', field: 'leadStatus', render: (val) => <StatusBadge status={val} /> },
+    {
+      header: 'Status', field: 'leadStatus', render: (val, row) => (
+        <select
+          className="select-field"
+          style={{ width: 'auto', padding: '2px 6px', fontSize: '11px', fontWeight: 600, height: '26px', cursor: 'pointer' }}
+          value={val || 'New'}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            e.stopPropagation();
+            updateLead(row.id, { leadStatus: e.target.value });
+            if (onRefresh) onRefresh();
+          }}
+        >
+          <option value="New">New</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Engaged">Engaged</option>
+          <option value="Proposal Sent">Proposal Sent</option>
+          <option value="Converted">Converted</option>
+          <option value="Disqualified">Disqualified</option>
+        </select>
+      )
+    },
     { header: 'Priority', field: 'priority', render: (val) => <PriorityBadge priority={val} /> },
     { header: 'Next Follow-up', field: 'nextFollowup', render: (val) => formatDate(val) },
     {
@@ -158,8 +180,29 @@ export const LeadsView = ({ leads, onRefresh }) => {
                 <ScoreBadge score={selectedLead.leadScore} />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', flexWrap: 'wrap' }}>
-                <StatusBadge status={selectedLead.leadStatus} />
+              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Status:</span>
+                  <select
+                    className="select-field"
+                    style={{ width: 'auto', padding: '4px 8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    value={selectedLead.leadStatus || 'New'}
+                    onChange={(e) => {
+                      const newStatus = e.target.value;
+                      const updated = updateLead(selectedLead.id, { leadStatus: newStatus });
+                      if (updated) setSelectedLead(updated);
+                      if (onRefresh) onRefresh();
+                    }}
+                  >
+                    <option value="New">New</option>
+                    <option value="Qualified">Qualified</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Engaged">Engaged</option>
+                    <option value="Proposal Sent">Proposal Sent</option>
+                    <option value="Converted">Converted</option>
+                    <option value="Disqualified">Disqualified</option>
+                  </select>
+                </div>
                 <PriorityBadge priority={selectedLead.priority} />
                 <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary-blue)' }}>{selectedLead.industry}</span>
               </div>
