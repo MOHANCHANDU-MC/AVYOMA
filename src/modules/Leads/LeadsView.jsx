@@ -171,7 +171,7 @@ export const LeadsView = ({ leads, onRefresh }) => {
           title={`Lead Profile: ${selectedLead.id}`}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ padding: '16px', borderRadius: 'var(--radius-lg)', backgroundColor: '#F8FAFC', border: '1px solid var(--border-color)' }}>
+            <div style={{ padding: '16px', borderRadius: 'var(--radius-lg)', background: 'rgba(248, 250, 252, 0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                 <div>
                   <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-dark)' }}>{selectedLead.fullName}</h3>
@@ -213,7 +213,7 @@ export const LeadsView = ({ leads, onRefresh }) => {
               <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>
                 Business Requirement
               </div>
-              <p style={{ fontSize: '13px', color: 'var(--text-dark)', lineHeight: 1.5, padding: '12px', backgroundColor: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-dark)', lineHeight: 1.5, padding: '12px', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                 {selectedLead.requirement || 'No detailed requirement provided.'}
               </p>
             </div>
@@ -268,7 +268,7 @@ export const LeadsView = ({ leads, onRefresh }) => {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: '#F8FAFC', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(248, 250, 252, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Building2 size={20} style={{ color: 'var(--primary-blue)' }} />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '13px' }}>Account (Company)</div>
@@ -276,7 +276,7 @@ export const LeadsView = ({ leads, onRefresh }) => {
                 </div>
               </div>
 
-              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: '#F8FAFC', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(248, 250, 252, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <User size={20} style={{ color: 'var(--status-amber-text)' }} />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '13px' }}>Primary Contact</div>
@@ -284,7 +284,7 @@ export const LeadsView = ({ leads, onRefresh }) => {
                 </div>
               </div>
 
-              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: '#F8FAFC', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(248, 250, 252, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Award size={20} style={{ color: 'var(--status-green)' }} />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '13px' }}>Opportunity (Pipeline)</div>

@@ -95,7 +95,7 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
       {/* Main Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         {/* Revenue Forecast Area Chart */}
-        <div className="prec-card">
+        <div className="glass-surface-l1">
           <div className="card-header">
             <div>
               <div className="card-title">Revenue Forecast & Weighted Pipeline</div>
@@ -111,16 +111,16 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
               <AreaChart data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
                 <YAxis stroke="#94A3B8" fontSize={11} />
-                <Tooltip formatter={(v) => [`₹${v} Lakhs`, '']} />
-                <Area type="monotone" dataKey="pipeline" stroke="#2563EB" fill="#EFF6FF" strokeWidth={2} />
-                <Area type="monotone" dataKey="commit" stroke="#10B981" fill="#ECFDF5" strokeWidth={2} />
+                <Tooltip formatter={(v) => [`₹${v} Lakhs`, '']} contentStyle={{ background: 'rgba(11, 18, 32, 0.9)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '8px', color: '#FFFFFF' }} />
+                <Area type="monotone" dataKey="pipeline" stroke="#2563EB" fill="#EFF6FF" fillOpacity={0.6} strokeWidth={2} />
+                <Area type="monotone" dataKey="commit" stroke="#10B981" fill="#ECFDF5" fillOpacity={0.6} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Pipeline by Industry Donut Chart */}
-        <div className="prec-card">
+        <div className="glass-surface-l1">
           <div className="card-header">
             <div>
               <div className="card-title">Pipeline by Industry</div>
@@ -135,7 +135,7 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v) => [`${v}%`, 'Share']} />
+                <Tooltip formatter={(v) => [`${v}%`, 'Share']} contentStyle={{ background: 'rgba(11, 18, 32, 0.9)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '8px', color: '#FFFFFF' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -154,7 +154,7 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
       {/* Funnel & Follow-ups Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
         {/* Sales Funnel */}
-        <div className="prec-card">
+        <div className="glass-surface-l1">
           <div className="card-header">
             <div className="card-title">Sales Conversion Funnel</div>
           </div>
@@ -162,7 +162,7 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
             {funnelSteps.map((f, idx) => (
               <div key={f.step} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ width: '80px', fontSize: '12px', fontWeight: 600, color: 'var(--text-dark)' }}>{f.step}</span>
-                <div style={{ flex: 1, backgroundColor: '#F1F5F9', borderRadius: '4px', height: '22px', overflow: 'hidden' }}>
+                <div style={{ flex: 1, backgroundColor: 'rgba(241, 245, 249, 0.8)', borderRadius: '4px', height: '22px', overflow: 'hidden' }}>
                   <div style={{
                     width: `${Math.max(15, (f.count / 248) * 100)}%`,
                     backgroundColor: idx === 5 ? 'var(--status-green)' : 'var(--primary-blue)',
@@ -184,7 +184,7 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
         </div>
 
         {/* Follow-up Today Widget */}
-        <div className="prec-card">
+        <div className="glass-surface-l1">
           <div className="card-header">
             <div>
               <div className="card-title">Follow-ups Today</div>
@@ -193,14 +193,14 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
             <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('tasks')}>View all</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid #BFDBFE', backgroundColor: '#EFF6FF' }}>
+            <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(191, 219, 254, 0.8)', background: 'rgba(239, 246, 255, 0.85)', backdropFilter: 'blur(8px)' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--primary-blue)', textTransform: 'uppercase' }}>10:30 AM TODAY</div>
               <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-dark)', marginTop: '2px' }}>ABC Aerospace / HAL</div>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>UAV Composite Proposal Discussion</div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Owner: Kavya R.</div>
             </div>
 
-            <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: '#FFFFFF' }}>
+            <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--status-amber-text)', textTransform: 'uppercase' }}>02:30 PM TODAY</div>
               <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-dark)', marginTop: '2px' }}>Bharat Electronics Ltd (BEL)</div>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Radar Phase Noise Spec Review</div>
@@ -210,14 +210,14 @@ export const DashboardView = ({ leads, opportunities, tasks, activities, onNavig
         </div>
 
         {/* Upcoming Tasks */}
-        <div className="prec-card">
+        <div className="glass-surface-l1">
           <div className="card-header">
             <div className="card-title">My Tasks & Reminders</div>
             <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('tasks')}>+ Task</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {tasks.slice(0, 4).map(task => (
-              <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
+              <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '8px 0', borderBottom: '1px solid rgba(241, 245, 249, 0.8)' }}>
                 <CheckSquare size={16} style={{ color: 'var(--primary-blue)', marginTop: '2px' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-dark)' }}>{task.title}</div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronUp, Download, Eye, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Download, Eye, Filter, Inbox } from 'lucide-react';
 
 export const DataTable = ({
   columns,
@@ -7,7 +7,7 @@ export const DataTable = ({
   onRowClick,
   searchPlaceholder = 'Search records...',
   bulkActions = [],
-  emptyMessage = 'No records found.'
+  emptyMessage = 'No records found matching your query.'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState(null);
@@ -67,7 +67,7 @@ export const DataTable = ({
       <div className="table-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '240px' }}>
           <div className="input-search-wrapper" style={{ flex: 1, maxWidth: '320px' }}>
-            <Search size={16} className="input-search-icon" />
+            <Search size={15} className="input-search-icon" />
             <input
               type="text"
               className="input-field input-search"
@@ -76,7 +76,7 @@ export const DataTable = ({
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
             Showing {filteredData.length} records
           </span>
         </div>
@@ -99,11 +99,12 @@ export const DataTable = ({
         <table className="prec-table">
           <thead>
             <tr>
-              <th style={{ width: '40px' }}>
+              <th style={{ width: '40px', textAlign: 'center' }}>
                 <input
                   type="checkbox"
                   onChange={toggleSelectAll}
                   checked={paginatedData.length > 0 && selectedIds.length === paginatedData.length}
+                  style={{ cursor: 'pointer', accentColor: 'var(--primary-blue)' }}
                 />
               </th>
               {columns.map((col) => (
@@ -115,7 +116,7 @@ export const DataTable = ({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span>{col.header}</span>
                     {sortField === col.field && (
-                      sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                      sortDirection === 'asc' ? <ChevronUp size={14} style={{ color: 'var(--primary-blue)' }} /> : <ChevronDown size={14} style={{ color: 'var(--primary-blue)' }} />
                     )}
                   </div>
                 </th>
@@ -128,13 +129,14 @@ export const DataTable = ({
                 <tr
                   key={row.id}
                   onClick={() => onRowClick && onRowClick(row)}
-                  style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+                  style={{ cursor: onRowClick ? 'pointer' : 'default', transition: 'background-color 0.12s ease' }}
                 >
-                  <td onClick={(e) => e.stopPropagation()}>
+                  <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(row.id)}
                       onChange={(e) => toggleSelectRow(row.id, e)}
+                      style={{ cursor: 'pointer', accentColor: 'var(--primary-blue)' }}
                     />
                   </td>
                   {columns.map((col) => (
@@ -146,8 +148,14 @@ export const DataTable = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length + 1} style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)' }}>
-                  {emptyMessage}
+                <td colSpan={columns.length + 1} style={{ padding: '0' }}>
+                  <div className="empty-state">
+                    <div className="empty-state-icon">
+                      <Inbox size={24} />
+                    </div>
+                    <div className="empty-state-title">No Records Found</div>
+                    <div className="empty-state-desc">{emptyMessage}</div>
+                  </div>
                 </td>
               </tr>
             )}
@@ -155,8 +163,8 @@ export const DataTable = ({
         </table>
       </div>
 
-      <div className="table-toolbar" style={{ borderTop: '1px solid var(--border-color)', borderBottom: 'none' }}>
-        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+      <div className="table-pagination">
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
           Page {currentPage} of {totalPages}
         </div>
         <div style={{ display: 'flex', gap: '6px' }}>

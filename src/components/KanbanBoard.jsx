@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { formatCurrency, formatDate, STAGE_CONFIG } from '../utils/formatters';
-import { PriorityBadge, StageBadge } from './StatusBadge';
-import { ConfirmDialog, Modal } from './Modal';
-import { ArrowRight, CheckCircle2, XCircle, AlertCircle, Building2, Calendar, User } from 'lucide-react';
+import { PriorityBadge } from './StatusBadge';
+import { Modal } from './Modal';
+import { Building2, User } from 'lucide-react';
 
 export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity }) => {
   const [draggedOppId, setDraggedOppId] = useState(null);
@@ -70,6 +70,7 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
           const config = STAGE_CONFIG[stageKey] || { label: stageKey, probability: 0 };
           const columnOpps = opportunities.filter(o => (o.salesStage || '').toUpperCase() === stageKey);
           const totalVal = columnOpps.reduce((acc, o) => acc + Number(o.opportunityValue || 0), 0);
+          const isTarget = targetStage === stageKey;
 
           return (
             <div
@@ -78,20 +79,31 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
               onDrop={(e) => handleDrop(e, stageKey)}
               style={{
                 flex: '0 0 280px',
-                backgroundColor: targetStage === stageKey ? '#EFF6FF' : '#F1F5F9',
+                background: isTarget ? 'rgba(239, 246, 255, 0.85)' : 'rgba(248, 250, 252, 0.65)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
                 borderRadius: 'var(--radius-lg)',
-                padding: '12px',
-                border: targetStage === stageKey ? '2px dashed var(--primary-blue)' : '1px solid var(--border-color)',
+                padding: '14px',
+                border: isTarget ? '2px dashed var(--primary-blue)' : '1px solid var(--border-color)',
+                boxShadow: isTarget ? '0 4px 16px rgba(37, 99, 235, 0.15)' : 'var(--shadow-xs)',
                 transition: 'all 0.15s ease'
               }}
             >
               {/* Stage Header */}
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-dark)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              <div style={{ marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     {config.label}
                   </span>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }} className="num-tabular">
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    color: 'var(--primary-blue)',
+                    backgroundColor: 'rgba(239, 246, 255, 0.9)',
+                    padding: '1px 7px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid rgba(37, 99, 235, 0.2)'
+                  }} className="num-tabular">
                     {config.probability}%
                   </span>
                 </div>
@@ -112,12 +124,13 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
                     draggable
                     onDragStart={(e) => handleDragStart(e, opp.id)}
                     onClick={() => onSelectOpportunity && onSelectOpportunity(opp)}
-                    className="prec-card prec-card-hover"
+                    className="glass-surface-l1 prec-card-hover"
                     style={{
                       padding: '12px 14px',
                       cursor: 'grab',
-                      backgroundColor: '#FFFFFF',
-                      borderLeft: `4px solid ${stageKey === 'WON' ? 'var(--status-green)' : stageKey === 'PROPOSAL' ? 'var(--status-amber)' : 'var(--primary-blue)'}`
+                      background: 'rgba(255, 255, 255, 0.88)',
+                      borderLeft: `4px solid ${stageKey === 'WON' ? 'var(--status-green)' : stageKey === 'PROPOSAL' ? 'var(--status-amber)' : 'var(--primary-blue)'}`,
+                      boxShadow: 'var(--shadow-xs)'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
@@ -132,11 +145,11 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                      <Building2 size={13} />
-                      <span>{opp.account}</span>
+                      <Building2 size={13} style={{ color: 'var(--text-muted)' }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opp.account}</span>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                       <div>
                         <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)' }} className="num-tabular">
                           {formatCurrency(opp.opportunityValue, opp.currency, true)}
@@ -147,8 +160,8 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
                       </div>
 
                       <div style={{ fontSize: '11px', textAlign: 'right', color: 'var(--text-secondary)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <User size={12} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                          <User size={12} style={{ color: 'var(--text-muted)' }} />
                           <span>{opp.owner ? opp.owner.split(' ')[0] : 'Unassigned'}</span>
                         </div>
                         <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -166,7 +179,8 @@ export const KanbanBoard = ({ opportunities, onStageChange, onSelectOpportunity 
                     border: '1px dashed var(--border-color)',
                     borderRadius: 'var(--radius-md)',
                     color: 'var(--text-muted)',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.4)'
                   }}>
                     Drag deals here
                   </div>
