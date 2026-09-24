@@ -1,0 +1,357 @@
+// Document Vault Enterprise Prisma Database Schema
+// Avyoma Systems Private Limited — Defence, Aerospace & Engineering DMS
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. Multi-Tenant Organization Isolation Boundary
+model Organization {
+  id                String             @id @default(uuid())
+  name              String
+  code              String             @unique
+  taxId             String?
+  country           String             @default("India")
+  securityTier      String             @default("ENTERPRISE_DEFENCE")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  users             User[]
+  departments       Department[]
+  projects          Project[]
+  folders           Folder[]
+  documents         Document[]
+  categories        DocumentCategory[]
+  auditLogs         AuditLog[]
+  retentionPolicies DocumentRetentionPolicy[]
+}
+
+// 2. User Account Identity & Role Assignment
+model User {
+  id                String             @id @default(uuid())
+  organizationId    String
+  email             String             @unique
+  fullName          String
+  role              String             @default("EMPLOYEE")
+  departmentId      String?
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  department        Department?        @relation(fields: [departmentId], references: [id])
+
+  uploadedDocs      Document[]         @relation("DocumentUploader")
+  ownedDocs         Document[]         @relation("DocumentOwner")
+  uploadedVersions  DocumentVersion[]
+  permissions       DocumentPermission[]
+  approvalSteps     ApprovalStep[]
+  comments          ApprovalComment[]
+  activities        DocumentActivity[]
+  auditLogs         AuditLog[]
+}
+
+// 3. Department
+model Department {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  code           String
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  users          User[]
+  documents      Document[]
+  folders        Folder[]
+}
+
+// 4. Project Context
+model Project {
+  id             String       @id @default(uuid())
+  organizationId String
+  projectCode    String
+  projectName    String
+  customerName   String?
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  documents      Document[]
+}
+
+// 5. Nested Folder Tree Hierarchy
+model Folder {
+  id             String       @id @default(uuid())
+  organizationId String
+  parentId       String?
+  departmentId   String?
+  name           String
+  path           String
+  color          String?
+  confidentiality String      @default("INTERNAL")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  parentFolder   Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
+  subFolders     Folder[]     @relation("FolderHierarchy")
+  department     Department?  @relation(fields: [departmentId], references: [id])
+  documents      Document[]
+  permissions    FolderPermission[]
+}
+
+// 6. Configurable Document Categories
+model DocumentCategory {
+  id             String       @id @default(uuid())
+  organizationId String
+  code           String
+  name           String
+  description    String?
+  isActive       Boolean      @default(true)
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  documents      Document[]
+}
+
+// 7. Master Document Record
+model Document {
+  id                     String             @id @default(uuid())
+  organizationId         String
+  folderId               String?
+  categoryId             String
+  departmentId           String?
+  projectId              String?
+  uploaderId             String
+  ownerId                String
+  
+  title                  String
+  fileName               String
+  description            String?
+  fileExtension          String
+  fileSize               String
+  fileSizeBytes          Int
+  mimeType               String
+  confidentiality        String             @default("INTERNAL")
+  currentVersion         String             @default("1.0")
+  status                 String             @default("APPROVED")
+  
+  effectiveDate          DateTime?
+  reviewDate             DateTime?
+  expiryDate             DateTime?
+  
+  // Industry-Specific Metadata
+  contractNumber         String?
+  partNumber             String?
+  drawingNumber          String?
+  revisionNumber         String?
+  applicableStandard     String?
+  checksumSHA256         String?
+  storageKey             String?
+  
+  isArchived             Boolean            @default(false)
+  isDeleted              Boolean            @default(false)
+  starred                Boolean            @default(false)
+  viewCount              Int                @default(0)
+  downloadCount          Int                @default(0)
+  
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  organization           Organization       @relation(fields: [organizationId], references: [id])
+  folder                 Folder?            @relation(fields: [folderId], references: [id])
+  category               DocumentCategory   @relation(fields: [categoryId], references: [id])
+  department             Department?        @relation(fields: [departmentId], references: [id])
+  project                Project?           @relation(fields: [projectId], references: [id])
+  uploader               User               @relation("DocumentUploader", fields: [uploaderId], references: [id])
+  owner                  User               @relation("DocumentOwner", fields: [ownerId], references: [id])
+
+  versions               DocumentVersion[]
+  tags                   DocumentTagAssignment[]
+  permissions            DocumentPermission[]
+  approvals              DocumentApproval[]
+  activities             DocumentActivity[]
+  auditLogs              AuditLog[]
+  shares                 DocumentShare[]
+  notifications          DocumentNotification[]
+}
+
+// 8. Immutable Document Version History
+model DocumentVersion {
+  id             String       @id @default(uuid())
+  documentId     String
+  uploaderId     String
+  versionNumber  String
+  fileName       String
+  fileSize       String
+  checksumSHA256 String
+  changeSummary  String?
+  storageKey     String?
+  uploadedAt     DateTime     @default(now())
+
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  uploader       User         @relation(fields: [uploaderId], references: [id])
+}
+
+// 9. Document Tags
+model DocumentTag {
+  id             String       @id @default(uuid())
+  name           String       @unique
+  assignments    DocumentTagAssignment[]
+}
+
+model DocumentTagAssignment {
+  documentId     String
+  tagId          String
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag            DocumentTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+}
+
+// 10. Document Level Permissions (RBAC + ABAC)
+model DocumentPermission {
+  id             String       @id @default(uuid())
+  documentId     String
+  userId         String?
+  departmentId   String?
+  permissionLevel String      @default("VIEW") // VIEW, DOWNLOAD, EDIT, APPROVE, MANAGE
+  expiresAt      DateTime?
+
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id])
+}
+
+// 11. Folder Level Permissions
+model FolderPermission {
+  id             String       @id @default(uuid())
+  folderId       String
+  role           String
+  canRead        Boolean      @default(true)
+  canWrite       Boolean      @default(false)
+  canDelete      Boolean      @default(false)
+
+  folder         Folder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+}
+
+// 12. Approval Workflows
+model DocumentApproval {
+  id             String       @id @default(uuid())
+  documentId     String
+  requestedById  String
+  status         String       @default("SUBMITTED")
+  submittedAt    DateTime     @default(now())
+  deadlineAt     DateTime?
+
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  steps          ApprovalStep[]
+}
+
+model ApprovalStep {
+  id             String           @id @default(uuid())
+  approvalId     String
+  approverId     String
+  stepOrder      Int              @default(1)
+  status         String           @default("PENDING")
+  actionAt       DateTime?
+
+  approval       DocumentApproval @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  approver       User             @relation(fields: [approverId], references: [id])
+  comments       ApprovalComment[]
+}
+
+model ApprovalComment {
+  id             String       @id @default(uuid())
+  stepId         String
+  authorId       String
+  commentText    String
+  timestamp      DateTime     @default(now())
+
+  step           ApprovalStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  author         User         @relation(fields: [authorId], references: [id])
+}
+
+// 16. Document Activity Log
+model DocumentActivity {
+  id             String       @id @default(uuid())
+  documentId     String
+  userId         String
+  actionType     String
+  details        String?
+  timestamp      DateTime     @default(now())
+
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+}
+
+// 17. Security & Compliance Audit Log
+model AuditLog {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String?
+  documentId     String?
+  action         String
+  ipAddress      String?
+  details        String
+  status         String       @default("SUCCESS")
+  timestamp      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  user           User?        @relation(fields: [userId], references: [id])
+  document       Document?    @relation(fields: [documentId], references: [id])
+}
+
+// 18. Shared Links
+model DocumentShare {
+  id             String       @id @default(uuid())
+  documentId     String
+  shareToken     String       @unique @default(uuid())
+  passcodeHash   String?
+  expiresAt      DateTime?
+  accessCount    Int          @default(0)
+
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+// 19. In-App Notifications
+model DocumentNotification {
+  id             String       @id @default(uuid())
+  userId         String
+  documentId     String?
+  type           String
+  message        String
+  isRead         Boolean      @default(false)
+  timestamp      DateTime     @default(now())
+
+  document       Document?    @relation(fields: [documentId], references: [id])
+}
+
+// 20. Document Retention Policy
+model DocumentRetentionPolicy {
+  id                           String       @id @default(uuid())
+  organizationId               String
+  categoryCode                 String
+  retentionYears               Int          @default(10)
+  mandatoryReviewIntervalDays  Int          @default(365)
+  autoArchive                  Boolean      @default(false)
+
+  organization                 Organization @relation(fields: [organizationId], references: [id])
+}
+
+// 21. Review Schedule
+model DocumentReviewSchedule {
+  id             String       @id @default(uuid())
+  documentId     String
+  nextReviewDate DateTime
+  assignedToUser String?
+}
+
+// 22. Related Documents
+model DocumentRelationship {
+  sourceDocId    String
+  targetDocId    String
+  relationship   String       @default("LINKED_SPEC")
+
+  @@id([sourceDocId, targetDocId])
+}

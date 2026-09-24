@@ -4,6 +4,7 @@ import { Topbar } from './components/Topbar';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { GlobalCreateModal } from './components/GlobalCreateModal';
 import { NotificationDrawer } from './components/NotificationDrawer';
+import { LoginPage } from './components/LoginPage';
 
 // CRM Module Views
 import { DashboardView } from './modules/Dashboard/DashboardView';
@@ -67,7 +68,14 @@ import {
 } from './services/financeStorageService';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('finance-dashboard');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!sessionStorage.getItem('avyoma_user');
+  });
+
+  const [activeTab, setActiveTab] = useState(() => {
+    return sessionStorage.getItem('avyoma_user') ? 'dashboard' : 'login';
+  });
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Global Modals State
@@ -113,12 +121,31 @@ export default function App() {
   };
 
   useEffect(() => {
-    refreshData();
+    if (isAuthenticated) {
+      refreshData();
+    }
 
     const handleOpenSearch = () => setIsSearchOpen(true);
     window.addEventListener('open-search-modal', handleOpenSearch);
     return () => window.removeEventListener('open-search-modal', handleOpenSearch);
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    setActiveTab('dashboard');
+    refreshData();
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('avyoma_user');
+    sessionStorage.removeItem('avyoma_organization');
+    setIsAuthenticated(false);
+    setActiveTab('login');
+  };
+
+  if (!isAuthenticated || activeTab === 'login') {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
 
   const unreadNotificationsCount = data.notifications.filter(n => !n.read).length;
 
@@ -128,6 +155,7 @@ export default function App() {
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onLogout={handleLogout}
         collapsed={sidebarCollapsed}
         setCollapsed={setSidebarCollapsed}
       />

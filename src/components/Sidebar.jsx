@@ -24,11 +24,12 @@ import {
   RefreshCw,
   FolderTree,
   FileSpreadsheet,
-  BookOpen
+  BookOpen,
+  LogOut
 } from 'lucide-react';
 import { getCurrentUser } from '../services/storageService';
 
-export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
+export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout }) => {
   const currentUser = getCurrentUser();
 
   const navSections = [
@@ -279,63 +280,95 @@ export const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) =>
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
-        justifyContent: collapsed ? 'center' : 'flex-start'
+        justifyContent: collapsed ? 'center' : 'space-between'
       }}>
-        <div style={{ position: 'relative', flexShrink: 0 }}>
-          <div style={{
-            width: '34px',
-            height: '34px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #162032 0%, #0B1220 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#F8FAFC',
-            fontSize: '12px',
-            fontWeight: 700,
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)'
-          }}>
-            {currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'KR'}
-          </div>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--status-green)',
-            position: 'absolute',
-            bottom: '0',
-            right: '0',
-            border: '2px solid #080F1C',
-            boxShadow: '0 0 6px rgba(16, 185, 129, 0.5)'
-          }} />
-        </div>
-
-        {!collapsed && (
-          <div style={{ overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #162032 0%, #0B1220 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               color: '#F8FAFC',
               fontSize: '12px',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              fontWeight: 700,
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)'
             }}>
-              {currentUser?.name || 'Kavya R.'}
+              {currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'EA'}
             </div>
             <div style={{
-              color: '#64748B',
-              fontSize: '10px',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}>
-              {currentUser?.role || 'Finance Admin'}
-            </div>
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--status-green)',
+              position: 'absolute',
+              bottom: '0',
+              right: '0',
+              border: '2px solid #080F1C',
+              boxShadow: '0 0 6px rgba(16, 185, 129, 0.5)'
+            }} />
           </div>
+
+          {!collapsed && (
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{
+                color: '#F8FAFC',
+                fontSize: '12px',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {currentUser?.name || 'Enterprise Admin'}
+              </div>
+              <div style={{
+                color: '#64748B',
+                fontSize: '10px',
+                fontWeight: 500,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {currentUser?.role || 'Administrator'}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            title="Log Out"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#64748B',
+              cursor: 'pointer',
+              padding: '6px',
+              borderRadius: 'var(--radius-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+              e.currentTarget.style.color = '#EF4444';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#64748B';
+            }}
+          >
+            <LogOut size={16} />
+          </button>
         )}
       </div>
     </aside>
   );
 };
+
